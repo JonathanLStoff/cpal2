@@ -178,7 +178,7 @@ fn create_bindings(cpal_asio_dir: &PathBuf) {
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
     // the resulting bindings.
-    let bindings = bindgen::Builder::default()
+    let mut bindings = bindgen::Builder::default()
         // The input header we would like to generate
         // bindings for.
         .header(asio_header)
@@ -224,12 +224,15 @@ fn create_bindings(cpal_asio_dir: &PathBuf) {
         .allowlist_function("get_driver_names")
         .bitfield_enum("AsioTimeInfoFlags")
         .bitfield_enum("ASIOTimeCodeFlags");
+
+    // Add AVX10 guards on Windows to avoid bindgen picking up unsupported intrinsics.
     #[cfg(target_os = "windows")]
-    bindings.clang_arg("-D__AVX10_2__=0");
-    #[cfg(target_os = "windows")]
-    bindings.clang_arg("-D__AVX10_2_256__=0");
-    #[cfg(target_os = "windows")]
-    bindings.clang_arg("-D__AVX10_2_512__=0");
+    {
+        bindings = bindings
+            .clang_arg("-D__AVX10_2__=0")
+            .clang_arg("-D__AVX10_2_256__=0")
+            .clang_arg("-D__AVX10_2_512__=0");
+    }
     // Finish the builder and generate the bindings.
     let bindings = bindings
         .generate()
