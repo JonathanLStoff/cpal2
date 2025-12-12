@@ -235,7 +235,11 @@ fn create_bindings(cpal_asio_dir: &PathBuf) {
             .clang_arg("-D__AVX10_1_512__=0")
             .clang_arg("-D__AVX10_2__=0")
             .clang_arg("-D__AVX10_2_256__=0")
-            .clang_arg("-D__AVX10_2_512__=0");
+            .clang_arg("-D__AVX10_2_512__=0")
+            // Block problematic AVX10 headers when clang lacks builtin support.
+            .clang_arg("-D_AVX10_2BF16INTRIN_H")
+            .clang_arg("-D_AVX10_2CONVERTINTRIN_H")
+            .clang_arg("-D_AVX10_2SATCVTDSINTRIN_H");
     }
     // Finish the builder and generate the bindings.
     let bindings = bindings
