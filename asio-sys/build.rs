@@ -223,11 +223,17 @@ fn create_bindings(cpal_asio_dir: &PathBuf) {
         .allowlist_function("remove_current_driver")
         .allowlist_function("get_driver_names")
         .bitfield_enum("AsioTimeInfoFlags")
-        .bitfield_enum("ASIOTimeCodeFlags")
-        // Finish the builder and generate the bindings.
-        .generate()
-        // Unwrap the Result and panic on failure.
-        .expect("Unable to generate bindings");
+        .bitfield_enum("ASIOTimeCodeFlags");
+    #[cfg(target_os = "windows")]
+    bindings.clang_arg("-D__AVX10_2__=0");
+    #[cfg(target_os = "windows")]
+    bindings.clang_arg("-D__AVX10_2_256__=0");
+    #[cfg(target_os = "windows")]
+    bindings.clang_arg("-D__AVX10_2_512__=0");
+    // Finish the builder and generate the bindings.
+    bindings.generate()
+    // Unwrap the Result and panic on failure.
+    .expect("Unable to generate bindings");
 
     // Write the bindings to the $OUT_DIR/bindings.rs file.
     let out_path = PathBuf::from(env::var("OUT_DIR").expect("bad path"));
