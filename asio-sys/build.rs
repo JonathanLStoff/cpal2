@@ -229,6 +229,10 @@ fn create_bindings(cpal_asio_dir: &PathBuf) {
     #[cfg(target_os = "windows")]
     {
         bindings = bindings
+            .clang_arg("-D__AVX10__=0")
+            .clang_arg("-D__AVX10_1__=0")
+            .clang_arg("-D__AVX10_1_256__=0")
+            .clang_arg("-D__AVX10_1_512__=0")
             .clang_arg("-D__AVX10_2__=0")
             .clang_arg("-D__AVX10_2_256__=0")
             .clang_arg("-D__AVX10_2_512__=0");
