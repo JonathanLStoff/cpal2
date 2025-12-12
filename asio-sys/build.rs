@@ -231,9 +231,10 @@ fn create_bindings(cpal_asio_dir: &PathBuf) {
     #[cfg(target_os = "windows")]
     bindings.clang_arg("-D__AVX10_2_512__=0");
     // Finish the builder and generate the bindings.
-    bindings.generate()
-    // Unwrap the Result and panic on failure.
-    .expect("Unable to generate bindings");
+    let bindings = bindings
+        .generate()
+        // Unwrap the Result and panic on failure.
+        .expect("Unable to generate bindings");
 
     // Write the bindings to the $OUT_DIR/bindings.rs file.
     let out_path = PathBuf::from(env::var("OUT_DIR").expect("bad path"));
